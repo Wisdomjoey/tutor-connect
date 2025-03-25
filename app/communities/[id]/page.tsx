@@ -122,7 +122,7 @@ export default function CommunityPage() {
     <div className="container mx-auto py-8">
       {loading ? (
         <div className="py-10">
-          <Spinner borderColor="border-white" />
+          <Spinner borderColor="border-primary" />
         </div>
       ) : error ? (
         <div className="py-10 text-center">{error}</div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -31,7 +31,7 @@ export default function ClassPage() {
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [classDetails, setClassDetails] = useState<ClassType>();
 
-  const fetchClassDetails = async (id: string) => {
+  const fetchClassDetails = useCallback(async (id: string) => {
     setError(undefined);
 
     const { message, success, data } = await fetchClass(id);
@@ -42,21 +42,21 @@ export default function ClassPage() {
       setIsEnrolled(true);
 
     setLoading(false);
-  };
+  }, [session?.user.id]);
 
   useEffect(() => {
     if (params.id && typeof params.id === "string")
       fetchClassDetails(params.id);
-  }, []);
+  }, [fetchClassDetails, params.id]);
 
   if (!params.id || typeof params.id !== "string")
-    return <div className="py-10 text-center">Class not found</div>;
+    return <div className="py-16 text-center">Class not found</div>;
 
   return (
     <div className="container mx-auto py-8">
       {loading ? (
         <div className="py-10">
-          <Spinner borderColor="border-white" />
+          <Spinner borderColor="border-primary" />
         </div>
       ) : error ? (
         <div className="py-10 text-center">{error}</div>

@@ -17,7 +17,7 @@ function Spinner({
         className={`animate-spin aspect-square ${
           width ?? "w-10"
         } rounded-[50%] border-4 ${
-          borderColor ?? "border-black"
+          borderColor ?? "border-primary-foreground"
         } border-l-[transparent]`}
       ></div>
     </div>
