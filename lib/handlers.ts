@@ -62,7 +62,7 @@ export const errorHandler = (error: unknown) => {
   }
 
   if ((error as any).name === "PrismaClientKnownRequestError") {
-    switch (error.code) {
+    switch ((error as any).code ?? '') {
       case "P5010":
         err = ERRORRES.NETWORK;
         msg =
@@ -109,7 +109,7 @@ export const errorHandler = (error: unknown) => {
     }
   }
 
-  console.error(error && error instanceof Object ? error.stack : error);
+  console.error(error && error instanceof Object ? (error as any).stack : error);
 
   return { status: err, message: msg, error };
 };
