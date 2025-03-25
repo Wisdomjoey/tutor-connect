@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum STATUS {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                String             @id @default(auto()) @map("_id") @db.ObjectId
+  email             String             @unique
+  phone             String             @unique
+  fullname          String
+  password          String
+  faculty           String
+  department        String
+  matric            String
+  image             String?
+  sessions          Session[]
+  classes           Class[]            @relation("TutorClasses")
+  enrollments       Enrollment[]
+  materials         Material[]
+  comments          Comment[]
+  communities       CommunityMember[]
+  ownedCommunities  Community[]        @relation("CommunityAdmin")
+  communityMessages CommunityMessage[]
+  communityFiles    CommunityFile[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+}
+
+model Class {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  faculty     String?
+  department  String?
+  description String
+  tutorId     String   @db.ObjectId
+  date        DateTime
+  end         DateTime
+  duration    Float
+  maxStudents Int?     @default(20)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tutor       User         @relation("TutorClasses", fields: [tutorId], references: [id])
+  enrollments Enrollment[]
+  materials   Material[]
+  comments    Comment[]
+}
+
+model Enrollment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  classId   String   @db.ObjectId
+  studentId String   @db.ObjectId
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  class   Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  student User  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, studentId])
+}
+
+model Material {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  classId    String   @db.ObjectId
+  name       String
+  url        String
+  uploadedBy String   @db.ObjectId
+  createdAt  DateTime @default(now())
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [uploadedBy], references: [id])
+}
+
+model Comment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  classId   String   @db.ObjectId
+  userId    String   @db.ObjectId
+  content   String
+  createdAt DateTime @default(now())
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id])
+}
+
+model Community {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  description String
+  faculty     String
+  department  String
+  adminId     String   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  admin    User               @relation("CommunityAdmin", fields: [adminId], references: [id])
+  members  CommunityMember[]
+  messages CommunityMessage[]
+  files    CommunityFile[]
+}
+
+model CommunityMember {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  communityId String   @db.ObjectId
+  userId      String   @db.ObjectId
+  status      STATUS   @default(PENDING) // pending, approved, rejected
+  joinedAt    DateTime @default(now())
+
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([communityId, userId])
+}
+
+model CommunityMessage {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  communityId String   @db.ObjectId
+  userId      String   @db.ObjectId
+  content     String
+  createdAt   DateTime @default(now())
+
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id])
+}
+
+model CommunityFile {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  communityId String   @db.ObjectId
+  userId      String   @db.ObjectId
+  name        String
+  url         String
+  createdAt   DateTime @default(now())
+
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id])
+}
