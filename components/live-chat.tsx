@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Room, RoomEvent } from "livekit-client";
+import { DataPacket_Kind, Room, RoomEvent } from "livekit-client";
 import { formatDistance } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -102,7 +102,8 @@ export function LiveChat({ roomName, initialMessages }: LiveChatProps) {
 
       await room.localParticipant.publishData(
         new TextEncoder().encode(JSON.stringify(data)),
-        { reliable: true }
+        DataPacket_Kind.RELIABLE,
+        // { reliable: true, }
       );
 
       setMessages((prev) => [...prev, message]);
