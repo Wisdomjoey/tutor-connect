@@ -147,8 +147,8 @@ export default function ClassPage() {
   };
 
   useEffect(() => {
-    if (classId && typeof classId === "string") fetchClassDetails(classId);
-  }, [fetchClassDetails, classId]);
+    if (classId && typeof classId === "string" && session) fetchClassDetails(classId);
+  }, [fetchClassDetails, classId, session]);
 
   if (!classId || typeof classId !== "string")
     return <div className="py-16 text-center">Class not found</div>;
@@ -186,7 +186,7 @@ export default function ClassPage() {
                   </Button>
                 )}
 
-                {!isEnrolled && query.get("token") && (
+                {!isEnrolled && token && (
                   <Button disabled={isPending} onClick={handleClassEnroll}>
                     {isPending ? (
                       <Spinner width="w-6" className="size-fit" />
