@@ -22,22 +22,22 @@ export const {
     async signIn({ user }) {
       if (!user?.id) return false;
 
-      const existingInvestor = await getUserById(user.id);
+      const existingUser = await getUserById(user.id);
 
-      if (!existingInvestor) return false;
-      // if (!existingInvestor.emailVerified) return false;
-      // if (!existingInvestor.phoneVerified) return false;
+      if (!existingUser) return false;
+      // if (!existingUser.emailVerified) return false;
+      // if (!existingUser.phoneVerified) return false;
 
       return true;
     },
     async jwt({ token }) {
       if (!token.sub) return token;
 
-      const existingInvestor = await getUserById(token.sub);
+      const existingUser = await getUserById(token.sub);
 
-      if (!existingInvestor) return token;
+      if (!existingUser) return token;
 
-      const { password, email, ...rest } = existingInvestor;
+      const { password, email, ...rest } = existingUser;
       token = { ...token, ...rest };
 
       return token;

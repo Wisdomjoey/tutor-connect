@@ -1,38 +1,40 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   LiveKitRoom,
   VideoConference,
-  GridLayout,
-  ParticipantTile,
-  RoomAudioRenderer,
   ControlBar,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
+import { useState } from "react";
 
 interface VideoRoomProps {
-  classId: string;
+  token: string;
 }
 
-export function VideoRoom({ classId }: VideoRoomProps) {
-  const [token, setToken] = useState("");
-
-  if (!token) {
-    return <div>Loading video room...</div>;
-  }
+export function VideoRoom({ token }: VideoRoomProps) {
+  const [connected, setConnected] = useState(false);
 
   return (
     <LiveKitRoom
-      token={token}
-      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
-      connect={true}
       video={true}
       audio={true}
+      token={token}
+      connect={true}
+      // className="fixed inset-0 z-50"
+      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+      onConnected={() => {
+        setConnected(true);
+        console.log("Connected");
+      }}
+      onDisconnected={() => {
+        setConnected(false);
+        console.log('Disconnected')
+      }}
     >
       <VideoConference />
-      <RoomAudioRenderer />
-      <ControlBar />
+
+      {/* <ControlBar /> */}
     </LiveKitRoom>
   );
 }

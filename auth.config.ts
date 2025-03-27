@@ -5,27 +5,31 @@ import { LoginSchema } from "./zod/schema";
 import { getUserByEmail } from "./lib/actions";
 
 export default {
-	providers: [
-		Credentials({
-			async authorize(credentials) {
-				const fields = LoginSchema.safeParse(credentials);
+  providers: [
+    Credentials({
+      credentials: {
+        email: {},
+        password: {},
+      },
+      async authorize(credentials) {
+        const fields = LoginSchema.safeParse(credentials);
 
-				if (fields.success) {
-					const { email, password } = fields.data;
-					const existingUser = await getUserByEmail(email);
+        if (fields.success) {
+          const { email, password } = fields.data;
+          const existingUser = await getUserByEmail(email);
 
-					if (!existingUser) return null;
+          if (!existingUser) return null;
 
-					const validPassword = await bcrypt.compare(
-						password,
-						existingUser.password ?? ""
-					);
+          const validPassword = await bcrypt.compare(
+            password,
+            existingUser.password ?? ""
+          );
 
-					if (validPassword) return existingUser;
-				}
+          if (validPassword) return { ...existingUser, password: null };
+        }
 
-				return null;
-			},
-		}),
-	],
+        return null;
+      },
+    }),
+  ],
 } satisfies NextAuthConfig;

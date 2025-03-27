@@ -314,11 +314,12 @@ export default function CommunitiesPage() {
                                 {community.name}
                               </h2>
 
-                              <span className="text-sm px-1 rounded-sm border border-green-400 bg-green-400/20">
-                                {community.adminId === session.user.id
-                                  ? "Admin"
-                                  : "Member"}
-                              </span>
+                              {(status === "APPROVED" ||
+                                community.adminId === session.user.id) && (
+                                <span className="text-sm px-1 rounded-sm border border-green-400 bg-green-400/20">
+                                  {status === "APPROVED" ? "Member" : "Admin"}
+                                </span>
+                              )}
                             </div>
 
                             <p className="text-muted-foreground mb-2">

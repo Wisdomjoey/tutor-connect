@@ -18,7 +18,7 @@ import { useState } from "react";
 
 export function Navigation() {
   const pathname = usePathname();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [isOpen, setIsOpen] = useState(false);
 
   const NavItems = () => (

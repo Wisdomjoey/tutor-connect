@@ -98,6 +98,9 @@ export const errorHandler = (error: unknown) => {
         err = ERRORRES.INVALID_CREDENTIALS;
         msg = "Invalid credentials";
         break;
+      case "CredentialsSignin":
+        throw error;
+        break;
       case "AccessDenied":
         err = ERRORRES.ACCESS_DENIED;
         msg = "SignIn Failed";

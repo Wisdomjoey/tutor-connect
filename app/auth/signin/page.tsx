@@ -18,8 +18,10 @@ import { useForm } from "react-hook-form";
 import DefaultInput from "@/components/inputs/DefaultInput";
 import Spinner from "@/components/widgets/Spinner";
 import { login } from "@/actions/auth";
+import { useSession } from "next-auth/react";
 
 export default function SignIn() {
+  const { update } = useSession();
   const { toast } = useToast();
   const [isPending, transition] = useTransition();
   const form = useForm<UseLoginSchema>({
@@ -33,6 +35,8 @@ export default function SignIn() {
   const handleSubmit = (values: UseLoginSchema) => {
     transition(async () => {
       const { message, success } = await login(values);
+
+      if (success) update();
 
       toast({
         description: message,
