@@ -1,13 +1,21 @@
 "use client";
 
-import { connectToClass } from "@/actions/class";
 import { VideoRoom } from "@/components/video-room";
 import Spinner from "@/components/widgets/Spinner";
-import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { Suspense } from "react";
 
 export default function ConnectPage() {
+  return (
+    <div className="h-screen">
+      <Suspense fallback={<Spinner />}>
+        <Page />
+      </Suspense>
+    </div>
+  );
+}
+
+function Page() {
   const query = useSearchParams();
 
   const token = query.get("token");

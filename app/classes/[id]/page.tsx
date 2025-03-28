@@ -2,6 +2,7 @@
 
 import {
   Fragment,
+  Suspense,
   useCallback,
   useEffect,
   useState,
@@ -38,6 +39,20 @@ type ClassType = Class & {
 };
 
 export default function ClassPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="h-screen">
+          <Spinner />
+        </div>
+      }
+    >
+      <Page />
+    </Suspense>
+  );
+}
+
+function Page() {
   const params = useParams();
   const { toast } = useToast();
   const router = useRouter();
