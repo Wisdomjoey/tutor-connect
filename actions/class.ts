@@ -50,13 +50,26 @@ export const connectToClass = async (id: string) => {
           },
         ],
       },
-      select: { id: true, tutorId: true },
+      select: { id: true, tutorId: true, date: true, end: true, ended: true },
     });
 
     if (!_class)
       return {
         success: false,
         message: "This class doesn't exist or your are not enrolled in it",
+      };
+
+    const now = new Date();
+
+    if (new Date(_class.date) > now)
+      return {
+        success: false,
+        message: "This class has not yet commenced",
+      };
+    if (new Date(_class.end) < now || _class.ended)
+      return {
+        success: false,
+        message: "This class has already ended",
       };
 
     const at = new AccessToken(apiKey, apiSecret, {

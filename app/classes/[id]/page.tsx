@@ -56,7 +56,7 @@ export default function ClassPage() {
   const message = classDetails
     ? new Date(classDetails.date) > now
       ? "This Class Has Not Yet Commenced"
-      : new Date(classDetails.end) < now
+      : new Date(classDetails.end) < now || classDetails.ended
       ? "This Class Has Ended"
       : undefined
     : undefined;
@@ -147,7 +147,8 @@ export default function ClassPage() {
   };
 
   useEffect(() => {
-    if (classId && typeof classId === "string" && session) fetchClassDetails(classId);
+    if (classId && typeof classId === "string" && session)
+      fetchClassDetails(classId);
   }, [fetchClassDetails, classId, session]);
 
   if (!classId || typeof classId !== "string")
