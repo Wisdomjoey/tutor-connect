@@ -7,7 +7,7 @@ import {
   useState,
   useTransition,
 } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
@@ -40,11 +40,11 @@ type ClassType = Class & {
 export default function ClassPage() {
   const params = useParams();
   const { toast } = useToast();
+  const router = useRouter();
   const query = useSearchParams();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
-  const [roomToken, setRoomToken] = useState<string>();
   const [invite, setInvite] = useState<string>();
   const [isPending, transition] = useTransition();
   const [isEnrolled, setIsEnrolled] = useState(false);
@@ -121,19 +121,6 @@ export default function ClassPage() {
     });
   };
 
-  const handleClassJoin = () => {
-    if (!classId && typeof classId !== "string") return;
-
-    transition(async () => {
-      const { message, success, data } = await connectToClass(
-        classId.toString()
-      );
-
-      if (data) setRoomToken(data);
-      if (!success) toast({ description: message, variant: "destructive" });
-    });
-  };
-
   const handleCopy = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -144,6 +131,19 @@ export default function ClassPage() {
 
       toast({ description: "Failed to copy", variant: "destructive" });
     }
+  };
+
+  const handleClassJoin = () => {
+    if (!classId && typeof classId !== "string") return;
+
+    transition(async () => {
+      const { message, success, data } = await connectToClass(
+        classId.toString()
+      );
+
+      if (data) router.push(`/connect?class=${classId}&token=${data}`);
+      if (!success) toast({ description: message, variant: "destructive" });
+    });
   };
 
   useEffect(() => {
@@ -251,8 +251,6 @@ export default function ClassPage() {
               <TabsContent value="video" className="space-y-4">
                 {message ? (
                   <div className="py-10 text-center">{message}</div>
-                ) : roomToken ? (
-                  <VideoRoom token={roomToken} />
                 ) : (
                   <div className="py-10 flex items-center justify-center">
                     <Button disabled={isPending} onClick={handleClassJoin}>

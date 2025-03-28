@@ -1,18 +1,20 @@
 "use client";
 
-import {
-  LiveKitRoom,
-  VideoConference,
-  ControlBar,
-} from "@livekit/components-react";
-import "@livekit/components-styles";
+import { useToast } from "@/hooks/use-toast";
+import { LiveKitRoom, VideoConference } from "@livekit/components-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+import "@livekit/components-styles";
 
 interface VideoRoomProps {
   token: string;
+  classId: string;
 }
 
-export function VideoRoom({ token }: VideoRoomProps) {
+export function VideoRoom({ token, classId }: VideoRoomProps) {
+  const router = useRouter();
+  const { toast } = useToast();
   const [connected, setConnected] = useState(false);
 
   return (
@@ -21,15 +23,21 @@ export function VideoRoom({ token }: VideoRoomProps) {
       audio={true}
       token={token}
       connect={true}
-      // className="fixed inset-0 z-50"
+      className="h-[100dvh]"
       serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       onConnected={() => {
         setConnected(true);
         console.log("Connected");
       }}
+      onError={(err) => {
+        console.log(err);
+        toast({ description: err.message, variant: "destructive" });
+      }}
       onDisconnected={() => {
         setConnected(false);
-        console.log('Disconnected')
+        console.log("Disconnected");
+
+        router.replace(`/classes/${classId}`);
       }}
     >
       <VideoConference />
