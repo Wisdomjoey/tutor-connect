@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useState } from "react";
+import Image from "next/image";
+import logo from "@/assets/logo.png";
 
 export function Navigation() {
   const pathname = usePathname();
@@ -68,7 +70,8 @@ export function Navigation() {
     <nav className="border-b">
       <div className="flex h-16 items-center px-4">
         <Link href="/" className="flex items-center space-x-2">
-          <BookOpen className="h-6 w-6" />
+          <Image src={logo} alt="Logo" className="w-8 object-contain" />
+
           <span className="font-bold">TutorConnect</span>
         </Link>
 

@@ -1,16 +1,17 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import { Toaster } from '@/components/ui/toaster';
-import { ThemeProvider } from '@/components/theme-provider';
-import { Navigation } from '@/components/navigation';
-import { Providers } from './providers';
+import "./globals.css";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Navigation } from "@/components/navigation";
+import { Providers } from "./providers";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'TutorConnect - Online Learning Platform',
-  description: 'Connect with tutors and students for interactive online learning sessions',
+  title: "TutorConnect - Online Learning Platform",
+  description:
+    "Connect with tutors and students for interactive online learning sessions",
 };
 
 export default function RootLayout({
@@ -28,8 +29,8 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Navigation />
-            <main className="min-h-screen bg-background">{children}</main>
+            {children}
+
             <Toaster />
           </ThemeProvider>
         </Providers>
