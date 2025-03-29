@@ -62,7 +62,6 @@ function Page() {
   const [error, setError] = useState<string>();
   const [invite, setInvite] = useState<string>();
   const [isPending, transition] = useTransition();
-  const [isEnrolled, setIsEnrolled] = useState(false);
   const [classDetails, setClassDetails] = useState<ClassType>();
 
   const classId = params.id;
@@ -75,25 +74,20 @@ function Page() {
       ? "This Class Has Ended"
       : undefined
     : undefined;
+  const isEnrolled =
+    session?.user.id === classDetails?.tutorId ||
+    classDetails?.enrollments.some((val) => val.studentId === session?.user.id);
 
-  const fetchClassDetails = useCallback(
-    async (id: string) => {
-      setError(undefined);
+  const fetchClassDetails = useCallback(async (id: string) => {
+    setError(undefined);
 
-      const { message, success, data } = await fetchClass(id);
+    const { message, success, data } = await fetchClass(id);
 
-      if (!success) setError(message);
-      if (data) setClassDetails(data);
-      if (
-        session?.user.id === data?.tutorId ||
-        data?.enrollments.some((val) => val.id === session?.user.id)
-      )
-        setIsEnrolled(true);
+    if (!success) setError(message);
+    if (data) setClassDetails(data);
 
-      setLoading(false);
-    },
-    [session?.user.id]
-  );
+    setLoading(false);
+  }, []);
 
   const handleInvite = () => {
     if (!classDetails?.id) return;

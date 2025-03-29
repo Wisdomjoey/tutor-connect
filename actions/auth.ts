@@ -3,7 +3,6 @@
 import { auth, signIn, signOut } from "@/auth";
 import { getUserByEmail } from "@/lib/actions";
 import { errorHandler } from "@/lib/handlers";
-import { PRIVATE_REDIRECT } from "@/routes";
 import { LoginSchema, UseLoginSchema } from "@/zod/schema";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
@@ -40,7 +39,7 @@ export const login = async (values: UseLoginSchema) => {
     await signIn("credentials", {
       email: data.email,
       password: data.password,
-      redirectTo: PRIVATE_REDIRECT,
+      redirect: false,
     });
 
     return { success: true, message: "Login Successfull" };

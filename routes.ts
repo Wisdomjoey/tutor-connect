@@ -10,7 +10,12 @@ export const publicRoutes: string[] = ["/"];
  * @type {string[]}
  */
 
-export const privateRoutes: string[] = ["/classes", "/communities"];
+export const privateRoutes: string[] = [
+  "/classes",
+  "/communities",
+  "/profile",
+  "/connect",
+];
 
 /**
  * This is an array of routes available to only unauthenticated users
@@ -20,5 +25,5 @@ export const privateRoutes: string[] = ["/classes", "/communities"];
 
 export const authRoutes: string[] = ["/auth"];
 
-export const PUBLIC_REDIRECT = "/login";
+export const PUBLIC_REDIRECT = "/signin";
 export const PRIVATE_REDIRECT = "/";

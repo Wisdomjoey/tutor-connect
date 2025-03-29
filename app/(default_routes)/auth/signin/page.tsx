@@ -19,10 +19,12 @@ import DefaultInput from "@/components/inputs/DefaultInput";
 import Spinner from "@/components/widgets/Spinner";
 import { login } from "@/actions/auth";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function SignIn() {
-  const { update } = useSession();
+  const router = useRouter();
   const { toast } = useToast();
+  const { update } = useSession();
   const [isPending, transition] = useTransition();
   const form = useForm<UseLoginSchema>({
     resolver: zodResolver(LoginSchema),
@@ -36,7 +38,9 @@ export default function SignIn() {
     transition(async () => {
       const { message, success } = await login(values);
 
-      if (success) update();
+      if (success) await update();
+
+      router.refresh();
 
       toast({
         description: message,

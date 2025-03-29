@@ -470,7 +470,7 @@ export const generateInvitation = async (id: string) => {
 
     return {
       success: true,
-      data: `${process.env.NEXT_PUBLIC_BASE_URL}/${id}?token=${data.token}`,
+      data: `${process.env.NEXT_PUBLIC_BASE_URL}/classes/${id}?token=${data.token}`,
       message: "Link generated! This link will expire in 15 minutes",
     };
   } catch (error) {

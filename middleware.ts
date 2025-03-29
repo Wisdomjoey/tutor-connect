@@ -13,10 +13,10 @@ const { auth } = NextAuth(authConfig);
 export default auth((req) => {
   const { nextUrl } = req;
   const loggedIn = !!req.auth;
-  const path = `/${nextUrl.pathname.split("/")[0]}`;
+  const path = `/${nextUrl.pathname.split("/")[1]}`;
   const isAuthRoute = authRoutes.includes(path);
   const isPrivateRoute = privateRoutes.includes(path);
-
+  
   if (isAuthRoute && loggedIn)
     return Response.redirect(new URL(PRIVATE_REDIRECT, nextUrl));
 
