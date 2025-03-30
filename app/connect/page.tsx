@@ -7,7 +7,7 @@ import { Suspense } from "react";
 
 export default function ConnectPage() {
   return (
-    <div className="h-screen">
+    <div className="h-screen overflow-hidden">
       <Suspense fallback={<Spinner />}>
         <Page />
       </Suspense>

@@ -150,7 +150,7 @@ function Page() {
         classId.toString()
       );
 
-      if (data) router.push(`/connect?class=${classId}&token=${data}`);
+      if (data) window.open(`/connect?class=${classId}&token=${data}`, '_blank');
       if (!success) toast({ description: message, variant: "destructive" });
     });
   };
