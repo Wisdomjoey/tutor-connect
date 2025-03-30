@@ -45,8 +45,11 @@
   color: hsl(var(--primary)) !important;
 }
 
-.lk-chat {
+.lk-chat.open {
   display: flex !important;
+}
+
+.lk-chat {
   flex-direction: column !important;
   border-left: 1px solid hsl(var(--border)) !important;
   background-color: hsl(var(--background)) !important;
@@ -59,12 +62,9 @@
   border-bottom: 1px solid hsl(var(--border)) !important;
 }
 
-.lk-list.lk-chat-messages.open {
-  display: flex !important;
-}
-
 .lk-list.lk-chat-messages {
   flex: 1 !important;
+  display: flex !important;
   flex-direction: column-reverse !important;
 }
 
