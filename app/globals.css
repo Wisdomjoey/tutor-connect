@@ -59,9 +59,12 @@
   border-bottom: 1px solid hsl(var(--border)) !important;
 }
 
+.lk-list.lk-chat-messages.open {
+  display: flex !important;
+}
+
 .lk-list.lk-chat-messages {
   flex: 1 !important;
-  display: flex !important;
   flex-direction: column-reverse !important;
 }
 

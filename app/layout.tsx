@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Providers } from "./providers";
 
 import "./globals.css";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,6 +35,8 @@ export default function RootLayout({
             <Toaster />
           </ThemeProvider>
         </Providers>
+
+        <Script src="/lk-script.js" />
       </body>
     </html>
   );
