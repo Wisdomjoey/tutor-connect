@@ -75,6 +75,11 @@
     justify-content: space-between !important;
   }
 
+  .lk-grid-layout-wrapper {
+    flex: 1 !important;
+    overflow: hidden !important;
+  }
+
   .lk-grid-layout {
     padding: 0.5rem !important;
     padding-bottom: 0 !important;
