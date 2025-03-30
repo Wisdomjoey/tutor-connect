@@ -5,6 +5,7 @@ import { LiveKitRoom, VideoConference } from "@livekit/components-react";
 import { useRouter } from "next/navigation";
 
 import "@livekit/components-styles";
+import { useEffect, useState } from "react";
 
 interface VideoRoomProps {
   token: string;
@@ -14,6 +15,22 @@ interface VideoRoomProps {
 export function VideoRoom({ token, classId }: VideoRoomProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const [connected, setConnected] = useState(false);
+
+  useEffect(() => {
+    if (connected) {
+      const script = document.createElement("script");
+
+      script.src = "/lk-script.js";
+      script.defer = true;
+
+      document.head.appendChild(script);
+
+      return () => {
+        document.head.removeChild(script);
+      };
+    }
+  }, [connected]);
 
   return (
     <LiveKitRoom
@@ -24,19 +41,14 @@ export function VideoRoom({ token, classId }: VideoRoomProps) {
       className="h-[100dvh]"
       serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       onConnected={() => {
-        console.log("Connected");
+        setConnected(true);
 
         toast({ description: "Connected" });
-
-        const script = document.createElement("script");
-
-        script.src = "/lk-script.js";
-        script.defer = true;
-
-        document.head.appendChild(script);
       }}
       onError={(err) => console.log(err)}
       onDisconnected={() => {
+        setConnected(false);
+
         toast({ description: "Diconnected", variant: "destructive" });
 
         router.replace(`/classes/${classId}`);
