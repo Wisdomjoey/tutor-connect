@@ -45,6 +45,10 @@
   color: hsl(var(--primary)) !important;
 }
 
+.lk-close-button > svg {
+  stroke: currentColor;
+}
+
 .lk-chat.open {
   display: flex !important;
 }
