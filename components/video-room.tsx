@@ -26,11 +26,18 @@ export function VideoRoom({ token, classId }: VideoRoomProps) {
       onConnected={() => {
         console.log("Connected");
 
-        toast({ description: 'Connected' });
+        toast({ description: "Connected" });
+
+        const script = document.createElement("script");
+
+        script.src = "/lk-script.js";
+        script.defer = true;
+
+        document.head.appendChild(script);
       }}
       onError={(err) => console.log(err)}
       onDisconnected={() => {
-        toast({ description: 'Diconnected', variant: "destructive" });
+        toast({ description: "Diconnected", variant: "destructive" });
 
         router.replace(`/classes/${classId}`);
       }}
