@@ -10,7 +10,7 @@ export default function ConnectLayout({
     <Fragment>
       <main className="min-h-screen bg-background">{children}</main>
 
-      <Script src="/lk-script.js" />
+      <Script src="/lk-script.js"  defer />
     </Fragment>
   );
 }
