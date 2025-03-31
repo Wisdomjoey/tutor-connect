@@ -25,5 +25,5 @@ export const privateRoutes: string[] = [
 
 export const authRoutes: string[] = ["/auth"];
 
-export const PUBLIC_REDIRECT = "/signin";
+export const PUBLIC_REDIRECT = "/auth/signin";
 export const PRIVATE_REDIRECT = "/";
