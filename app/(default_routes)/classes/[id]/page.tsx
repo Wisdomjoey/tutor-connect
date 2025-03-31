@@ -197,7 +197,7 @@ function Page() {
                   </Button>
                 )}
 
-                {!isEnrolled && token && (
+                {!isEnrolled && token && token !== "" && (
                   <Button disabled={isPending} onClick={handleClassEnroll}>
                     {isPending ? (
                       <Spinner width="w-6" className="size-fit" />
