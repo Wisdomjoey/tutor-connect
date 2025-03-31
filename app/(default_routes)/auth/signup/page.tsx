@@ -138,7 +138,7 @@ export default function SignUp() {
                     <FormControl>
                       <SelectInput
                         id="faculty"
-                        label="Faculty"
+                        label="Faculty (optional)"
                         disabled={isPending}
                         placeholder="Select Faculty"
                         items={[
@@ -164,7 +164,7 @@ export default function SignUp() {
                     <FormControl>
                       <SelectInput
                         id="department"
-                        label="Department"
+                        label="Department (optional)"
                         disabled={isPending}
                         placeholder="Select Department"
                         items={[
@@ -191,7 +191,7 @@ export default function SignUp() {
                       <DefaultInput
                         id="matric"
                         disabled={isPending}
-                        label="Matric/Reg No."
+                        label="Matric/Reg No. (optional)"
                         placeholder="Matric No."
                         {...field}
                       />

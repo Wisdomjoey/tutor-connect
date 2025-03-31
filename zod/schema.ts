@@ -60,9 +60,9 @@ export const RegisterSchema = z
     fullname: zString.min(1, "Fullname is required"),
     email: zString.min(1, "Email is required"),
     phone: zString.min(1, "Phone Number is required"),
-    faculty: zString.min(1, "Faculty is required"),
-    department: zString.min(1, "Department is required"),
-    matric: zString.min(1, "Matric/Reg No. is required"),
+    faculty: zString.optional(),
+    department: zString.optional(),
+    matric: zString.optional(),
   })
   .merge(PasswordSchema)
   .refine(({ cPassword, password }) => cPassword === password, {
