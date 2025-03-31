@@ -345,6 +345,10 @@ export default function CommunitiesPage() {
                           {(key === "all" || status !== "APPROVED") &&
                           community.adminId !== session.user.id ? (
                             <Button
+                              disabled={
+                                (status && status !== "APPROVED") ||
+                                joining === community.id
+                              }
                               onClick={() =>
                                 !status && handleJoinRequest(community.id)
                               }
