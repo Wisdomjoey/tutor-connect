@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -28,8 +28,13 @@ import {
   STATUS,
   User,
 } from "@prisma/client";
-import { fetchCommunity, handleJoinRequest } from "@/actions/community";
+import {
+  connectToCommunity,
+  fetchCommunity,
+  handleJoinRequest,
+} from "@/actions/community";
 import Spinner from "@/components/widgets/Spinner";
+import { Room } from "livekit-client";
 
 type CommunityType = Community & {
   admin: User;
@@ -49,6 +54,7 @@ const departmentIcons: { [key: string]: any } = {
 export default function CommunityPage() {
   const params = useParams();
   const { toast } = useToast();
+  const roomRef = useRef(new Room());
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
@@ -58,16 +64,40 @@ export default function CommunityPage() {
   useEffect(() => {
     if (params.id && typeof params.id === "string")
       fetchCommunityData(params.id);
+
+    const ref = roomRef.current;
+
+    return () => {
+      ref.disconnect();
+    };
   }, [params.id]);
 
   const fetchCommunityData = async (id: string) => {
     setError(undefined);
 
-    const { success, data } = await fetchCommunity(id);
+    try {
+      const { success, data } = await fetchCommunity(id);
 
-    if (!success) setError("Something went wrong");
+      if (!success) setError("Something went wrong");
+      if (data) setCommunity(data);
 
-    if (data) setCommunity(data);
+      const {
+        success: success1,
+        data: token,
+        message,
+      } = await connectToCommunity(id);
+
+      if (!success1) setError(message);
+      if (token)
+        await roomRef.current.connect(
+          process.env.NEXT_PUBLIC_LIVEKIT_URL ?? "",
+          token
+        );
+    } catch (error) {
+      console.error(error);
+
+      setError("Something went wrong");
+    }
 
     setLoading(false);
   };

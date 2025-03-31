@@ -5,6 +5,10 @@ import { db } from "@/lib/prisma";
 import { CommunitySchema, UseCommunitySchema } from "@/zod/schema";
 import { authenticate } from "./auth";
 import { STATUS } from "@prisma/client";
+import { AccessToken } from "livekit-server-sdk";
+
+const apiKey = process.env.LIVEKIT_API_KEY;
+const apiSecret = process.env.LIVEKIT_SECRET;
 
 export const createCommunity = async (values: UseCommunitySchema) => {
   try {
@@ -58,6 +62,72 @@ export const createCommunity = async (values: UseCommunitySchema) => {
       success: true,
       data: community,
       message: "Successfully created community",
+    };
+  } catch (error) {
+    const err = errorHandler(error);
+
+    return { ...err, success: false };
+  }
+};
+
+export const connectToCommunity = async (id: string) => {
+  try {
+    const auth = await authenticate();
+    const userId = auth.session?.user.id;
+
+    if (!auth.valid || !userId)
+      return {
+        success: false,
+        message: "Session has expired",
+      };
+    if (!apiKey || !apiSecret)
+      return {
+        success: false,
+        message: "Missing or Invalid Configurations",
+      };
+
+    const community = await db.community.findUnique({
+      where: {
+        id,
+        OR: [
+          { adminId: userId },
+          {
+            members: {
+              some: {
+                userId,
+              },
+            },
+          },
+        ],
+      },
+      select: { id: true, adminId: true },
+    });
+
+    if (!community)
+      return {
+        success: false,
+        message:
+          "You are not a member of this community or Community does not exist",
+      };
+
+    const at = new AccessToken(apiKey, apiSecret, {
+      identity: userId,
+      name: auth.session?.user.fullname ?? "Anonymous",
+    });
+
+    at.addGrant({
+      room: id,
+      roomJoin: true,
+      canPublish: true,
+      roomCreate: true,
+      canSubscribe: true,
+      roomAdmin: userId === community.adminId,
+    });
+
+    return {
+      success: true,
+      data: at.toJwt(),
+      message: "Successfull",
     };
   } catch (error) {
     const err = errorHandler(error);
