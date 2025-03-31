@@ -4,6 +4,7 @@ import { errorHandler } from "@/lib/handlers";
 import { db } from "@/lib/prisma";
 import { hashPassword } from "@/lib/utils";
 import { RegisterSchema, UseRegisterSchema } from "@/zod/schema";
+import { authenticate } from "./auth";
 
 export const register = async (values: UseRegisterSchema) => {
   try {
@@ -58,6 +59,40 @@ export const register = async (values: UseRegisterSchema) => {
     });
 
     return { success: true, message: "Successfully created user" };
+  } catch (error) {
+    const err = errorHandler(error);
+
+    return { ...err, success: false };
+  }
+};
+
+export const updateUser = async ({
+  name,
+  bio,
+}: {
+  name?: string;
+  bio?: string;
+}) => {
+  try {
+    const auth = await authenticate();
+    const userId = auth.session?.user.id;
+
+    if (!auth.valid || !userId)
+      return {
+        success: false,
+        message: "Session has expired",
+      };
+
+    await db.user.update({
+      where: { id: userId },
+      data: {
+        bio,
+        fullname: name,
+        updatedAt: new Date(),
+      },
+    });
+
+    return { success: true, message: "Successfully updated detailes" };
   } catch (error) {
     const err = errorHandler(error);
 

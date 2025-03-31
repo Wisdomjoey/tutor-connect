@@ -28,6 +28,7 @@ model User {
   fullname          String
   password          String
   faculty           String?
+  bio               String?
   department        String?
   matric            String?
   image             String?

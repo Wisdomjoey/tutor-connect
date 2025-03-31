@@ -10,10 +10,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookOpen, Users, MessageSquare } from "lucide-react";
+import { updateUser } from "@/actions/user";
+import Spinner from "@/components/widgets/Spinner";
 
 export default function ProfilePage() {
-  const { data: session } = useSession();
   const { toast } = useToast();
+  const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
 
   const handleUpdateProfile = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -21,38 +23,26 @@ export default function ProfilePage() {
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const name = formData.get("name") as string;
-    const bio = formData.get("bio") as string;
+    const name = formData.get("name");
+    const bio = formData.get("bio");
 
-    try {
-      const response = await fetch("/api/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          bio,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update profile");
-      }
-
-      toast({
-        title: "Success",
-        description: "Your profile has been updated",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update profile",
+    if (!name)
+      return toast({
+        description: "Required fields were not passed",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
-    }
+
+    const { message, success } = await updateUser({
+      name: name.toString(),
+      bio: bio?.toString(),
+    });
+
+    toast({
+      description: message,
+      variant: success ? "default" : "destructive",
+    });
+
+    setLoading(false);
   };
 
   if (!session) {
@@ -98,61 +88,67 @@ export default function ProfilePage() {
 
         <div className="md:col-span-2">
           <Card className="p-6">
-            <Tabs defaultValue="profile" className="space-y-4">
-              <TabsList>
-                <TabsTrigger value="profile">Profile</TabsTrigger>
-                <TabsTrigger value="settings">Settings</TabsTrigger>
-              </TabsList>
+            {loading ? (
+              <div className="py-10">
+                <Spinner borderColor="border-primary" />
+              </div>
+            ) : (
+              <Tabs defaultValue="profile" className="space-y-4">
+                <TabsList>
+                  <TabsTrigger value="profile">Profile</TabsTrigger>
+                  <TabsTrigger value="settings">Settings</TabsTrigger>
+                </TabsList>
 
-              <TabsContent value="profile">
-                <form onSubmit={handleUpdateProfile} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      defaultValue={session.user?.fullname || ""}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="bio">Bio</Label>
-                    <Textarea
-                      id="bio"
-                      name="bio"
-                      placeholder="Tell us about yourself..."
-                      className="min-h-[100px]"
-                    />
-                  </div>
-
-                  <Button type="submit" disabled={loading}>
-                    {loading ? "Saving..." : "Save Changes"}
-                  </Button>
-                </form>
-              </TabsContent>
-
-              <TabsContent value="settings">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Email Notifications</Label>
+                <TabsContent value="profile">
+                  <form onSubmit={handleUpdateProfile} className="space-y-4">
                     <div className="space-y-2">
-                      <label className="flex items-center gap-2">
-                        <input type="checkbox" defaultChecked />
-                        <span>Class reminders</span>
-                      </label>
-                      <label className="flex items-center gap-2">
-                        <input type="checkbox" defaultChecked />
-                        <span>Community updates</span>
-                      </label>
-                      <label className="flex items-center gap-2">
-                        <input type="checkbox" defaultChecked />
-                        <span>New message notifications</span>
-                      </label>
+                      <Label htmlFor="name">Full Name</Label>
+                      <Input
+                        id="name"
+                        name="name"
+                        defaultValue={session.user?.fullname || ""}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="bio">Bio</Label>
+                      <Textarea
+                        id="bio"
+                        name="bio"
+                        placeholder="Tell us about yourself..."
+                        className="min-h-[100px]"
+                      />
+                    </div>
+
+                    <Button type="submit" disabled={loading}>
+                      {loading ? "Saving..." : "Save Changes"}
+                    </Button>
+                  </form>
+                </TabsContent>
+
+                <TabsContent value="settings">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Email Notifications</Label>
+                      <div className="space-y-2">
+                        <label className="flex items-center gap-2">
+                          <input type="checkbox" defaultChecked />
+                          <span>Class reminders</span>
+                        </label>
+                        <label className="flex items-center gap-2">
+                          <input type="checkbox" defaultChecked />
+                          <span>Community updates</span>
+                        </label>
+                        <label className="flex items-center gap-2">
+                          <input type="checkbox" defaultChecked />
+                          <span>New message notifications</span>
+                        </label>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </TabsContent>
-            </Tabs>
+                </TabsContent>
+              </Tabs>
+            )}
           </Card>
         </div>
       </div>
