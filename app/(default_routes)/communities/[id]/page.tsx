@@ -267,7 +267,7 @@ export default function CommunityPage() {
                               disabled={request === req.userId}
                               onClick={() =>
                                 handleJoin(
-                                  req.userId,
+                                  req.id,
                                   req.communityId,
                                   STATUS.APPROVED
                                 )
@@ -289,7 +289,7 @@ export default function CommunityPage() {
                               variant="destructive"
                               onClick={() =>
                                 handleJoin(
-                                  req.userId,
+                                  req.id,
                                   req.communityId,
                                   STATUS.REJECTED
                                 )
