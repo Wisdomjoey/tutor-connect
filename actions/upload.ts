@@ -33,6 +33,7 @@ export const uploadFile = async (form: FormData) => {
     }
 
     const uploads: {
+      name: string;
       url: string;
       key: string;
     }[] = [];
@@ -60,6 +61,7 @@ export const uploadFile = async (form: FormData) => {
 
       uploads.push({
         url: url.split("?")[0],
+        name: file.name,
         key,
       });
     }

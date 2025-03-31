@@ -150,7 +150,8 @@ function Page() {
         classId.toString()
       );
 
-      if (data) window.open(`/connect?class=${classId}&token=${data}`, '_blank');
+      if (data)
+        window.open(`/connect?class=${classId}&token=${data}`, "_blank");
       if (!success) toast({ description: message, variant: "destructive" });
     });
   };
@@ -253,7 +254,7 @@ function Page() {
             <Tabs defaultValue="video" className="space-y-4">
               <TabsList>
                 <TabsTrigger value="video">Video Room</TabsTrigger>
-                <TabsTrigger value="chat">Chat</TabsTrigger>
+
                 <TabsTrigger value="materials">Materials</TabsTrigger>
               </TabsList>
 
@@ -273,19 +274,14 @@ function Page() {
                 )}
               </TabsContent>
 
-              <TabsContent value="chat" className="space-y-4">
-                {message ? (
-                  <div className="py-10 text-center">{message}</div>
-                ) : (
-                  <Chat classId={params.id as string} />
-                )}
-              </TabsContent>
-
               <TabsContent value="materials" className="space-y-4">
                 {message ? (
                   <div className="py-10 text-center">{message}</div>
                 ) : (
-                  <MaterialsList classId={params.id as string} />
+                  <MaterialsList
+                    classId={params.id as string}
+                    tutorId={classDetails.tutorId}
+                  />
                 )}
               </TabsContent>
             </Tabs>

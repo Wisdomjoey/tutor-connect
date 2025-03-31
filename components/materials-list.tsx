@@ -1,107 +1,174 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FileText, Upload } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { Material } from "@prisma/client";
+import { useToast } from "@/hooks/use-toast";
+import Spinner from "./widgets/Spinner";
+import { fetchClassMaterials, uploadClassFile } from "@/actions/class";
 
 interface MaterialsListProps {
   classId: string;
+  tutorId: string;
 }
 
-interface Material {
-  id: string;
-  name: string;
-  url: string;
-  createdAt: Date;
-}
-
-export function MaterialsList({ classId }: MaterialsListProps) {
+export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
+  const { toast } = useToast();
   const { data: session } = useSession();
+  const [loading, setLoading] = useState(true);
+  const [files, setFiles] = useState<File[]>([]);
+  const intervalRef = useRef<NodeJS.Timeout>(null);
   const [materials, setMaterials] = useState<Material[]>([]);
-  const [uploading, setUploading] = useState(false);
+
+  const fetch = useCallback(async () => {
+    const { message, success, data } = await fetchClassMaterials(classId);
+
+    if (data) setMaterials(data);
+
+    intervalRef.current = setInterval(fetch, 60000);
+
+    toast({
+      description: message,
+      variant: success ? "default" : "destructive",
+    });
+
+    setLoading(false);
+  }, [classId, toast]);
+
+  const handleFiles = (fileList: FileList) => {
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList.item(i);
+
+      if (!file) continue;
+
+      const limit = 1000 * 1024;
+
+      if (file.size > limit) {
+        return toast({
+          description: "One of the files has exceeded size limit of 1mb",
+          variant: "destructive",
+        });
+      }
+
+      setFiles((prev) => [...prev, file]);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (files.length <= 0) return;
+
+    setLoading(true);
+
+    const form = new FormData();
+
+    files.forEach((file, ind) => form.append(ind.toString(), file));
+
+    const { message, success } = await uploadClassFile(classId, form);
+
+    if (intervalRef.current) clearInterval(intervalRef.current);
+
+    await fetch();
+
+    toast({
+      description: message,
+      variant: success ? "default" : "destructive",
+    });
+  };
 
   useEffect(() => {
-    fetchMaterials();
-  }, []);
+    fetch();
 
-  const fetchMaterials = async () => {
-    try {
-      const response = await fetch(`/api/classes/${classId}/materials`);
-      const data = await response.json();
-      setMaterials(data);
-    } catch (error) {
-      console.error("Error fetching materials:", error);
-    }
-  };
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [fetch]);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !session?.user) return;
+  if (loading)
+    return (
+      <div className="py-10">
+        <Spinner borderColor="border-primary" />
+      </div>
+    );
 
-    setUploading(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch(`/api/classes/${classId}/materials`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) throw new Error("Failed to upload file");
-
-      const newMaterial = await response.json();
-      setMaterials((prev) => [...prev, newMaterial]);
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    } finally {
-      setUploading(false);
-    }
-  };
+  if (materials.length <= 0)
+    return (
+      <div className="py-10">
+        <p>There are currently no uploaded files</p>
+      </div>
+    );
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <Input
-          type="file"
-          onChange={handleFileUpload}
-          disabled={uploading}
-          className="hidden"
-          id="file-upload"
-        />
-        <label htmlFor="file-upload">
-          <Button asChild>
+      {session?.user.id === tutorId && (
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-wrap items-center gap-4"
+        >
+          <Input
+            required
+            type="file"
+            disabled={loading}
+            className="min-w-40"
+            id="file-upload"
+            onChange={(e) => e.target.files && handleFiles(e.target.files)}
+          />
+
+          <Button type="submit">
             <span>
               <Upload className="mr-2 h-4 w-4" />
               Upload Material
             </span>
           </Button>
-        </label>
-      </div>
+        </form>
+      )}
 
-      <div className="space-y-2">
-        {materials.map((material) => (
-          <div
-            key={material.id}
-            className="flex items-center justify-between p-4 border rounded-lg"
-          >
-            <div className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              <span>{material.name}</span>
-            </div>
-            <a
-              href={material.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              Download
-            </a>
+      <div className="space-y-5">
+        {files.length > 0 && (
+          <div className="space-y-2">
+            <h3 className="text-base sm:text-lg">Uploaded</h3>
+
+            {files.map((material, ind) => (
+              <div
+                key={ind}
+                className="flex items-center justify-between p-4 border rounded-lg"
+              >
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  <span>{material.name}</span>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
+
+        <div className="space-y-2">
+          <h3 className="text-base sm:text-lg">Class Files</h3>
+
+          {materials.map((material, ind) => (
+            <div
+              key={ind}
+              className="flex items-center justify-between p-4 border rounded-lg"
+            >
+              <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                <span>{material.name}</span>
+              </div>
+
+              <Button asChild>
+                <a
+                  target="_blank"
+                  href={material.url}
+                  rel="noopener noreferrer"
+                >
+                  Download
+                </a>
+              </Button>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { ClassSchema, UseClassSchema } from "@/zod/schema";
 import { authenticate } from "./auth";
 import { generateToken } from "@/lib/utils";
 import { AccessToken } from "livekit-server-sdk";
+import { uploadFile } from "./upload";
 
 const apiKey = process.env.LIVEKIT_API_KEY;
 const apiSecret = process.env.LIVEKIT_SECRET;
@@ -297,6 +298,34 @@ export const fetchClass = async (id: string) => {
   }
 };
 
+export const fetchClassMaterials = async (id: string) => {
+  try {
+    const auth = await authenticate();
+
+    if (!auth.valid || !auth.session?.user.id)
+      return {
+        success: false,
+        message: "Session has expired",
+      };
+
+    const materials = await db.material.findMany({
+      where: {
+        classId: id,
+      },
+    });
+
+    return {
+      success: true,
+      data: materials,
+      message: "Successfully fetched class materials",
+    };
+  } catch (error) {
+    const err = errorHandler(error);
+
+    return { ...err, success: false };
+  }
+};
+
 export const fetchOngoingClasses = async () => {
   try {
     const auth = await authenticate();
@@ -472,6 +501,67 @@ export const generateInvitation = async (id: string) => {
       success: true,
       data: `${process.env.NEXT_PUBLIC_BASE_URL}/classes/${id}?token=${data.token}`,
       message: "Link generated! This link will expire in 15 minutes",
+    };
+  } catch (error) {
+    const err = errorHandler(error);
+
+    return { ...err, success: false };
+  }
+};
+
+export const uploadClassFile = async (id: string, form: FormData) => {
+  try {
+    const auth = await authenticate();
+
+    if (!auth.valid || !auth.session?.user.id)
+      return {
+        success: false,
+        message: "Session has expired",
+      };
+
+    let _class = await db.class.findUnique({
+      where: { id },
+      select: {
+        tutorId: true,
+        tutor: {
+          select: { fullname: true },
+        },
+      },
+    });
+
+    if (!_class)
+      return {
+        success: false,
+        message: "Class doesn't exist",
+      };
+    if (auth.session.user.id !== _class.tutorId)
+      return {
+        success: false,
+        message: "You are not authorized to upload files to this class",
+      };
+
+    const upload = await uploadFile(form);
+
+    if (!upload.success || !upload.data)
+      return {
+        success: false,
+        message: upload.message,
+      };
+
+    await db.material.createMany({
+      data: [
+        ...upload.data.map((val) => ({
+          uploadedBy: _class.tutor.fullname,
+          name: val.name,
+          url: val.url,
+          classId: id,
+        })),
+      ],
+    });
+
+    return {
+      success: true,
+      message: "Successfully uploaded files",
     };
   } catch (error) {
     const err = errorHandler(error);
