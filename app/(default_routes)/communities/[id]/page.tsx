@@ -147,7 +147,14 @@ export default function CommunityPage() {
 
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Users className="h-4 w-4" />
-                  <span>{community.members.length} members</span>
+                  <span>
+                    {
+                      community.members.filter(
+                        (val) => val.status === "APPROVED"
+                      ).length
+                    }{" "}
+                    members
+                  </span>
                 </div>
               </div>
             </div>
@@ -241,49 +248,65 @@ export default function CommunityPage() {
                     <p className="text-muted-foreground">No pending requests</p>
                   ) : (
                     <div className="space-y-4">
-                      {requests.map((request) => (
+                      {requests.map((req) => (
                         <div
-                          key={request.id}
+                          key={req.id}
                           className="flex items-center justify-between p-4 border rounded-lg"
                         >
                           <div>
-                            <p className="font-medium">
-                              {request.user.fullname}
-                            </p>
+                            <p className="font-medium">{req.user.fullname}</p>
 
                             <p className="text-sm text-muted-foreground">
-                              {request.user.email}
+                              {req.user.email}
                             </p>
                           </div>
 
                           <div className="flex gap-2">
                             <Button
                               size="sm"
+                              disabled={request === req.userId}
                               onClick={() =>
                                 handleJoin(
-                                  request.userId,
-                                  request.communityId,
+                                  req.userId,
+                                  req.communityId,
                                   STATUS.APPROVED
                                 )
                               }
                             >
-                              <Check className="h-4 w-4 mr-1" />
-                              Approve
+                              {request === req.userId ? (
+                                <Spinner width="w-6" className="size-fit" />
+                              ) : (
+                                <>
+                                  <Check className="h-4 w-4 mr-1" />
+                                  Approve
+                                </>
+                              )}
                             </Button>
 
                             <Button
                               size="sm"
+                              disabled={request === req.userId}
                               variant="destructive"
                               onClick={() =>
                                 handleJoin(
-                                  request.userId,
-                                  request.communityId,
+                                  req.userId,
+                                  req.communityId,
                                   STATUS.REJECTED
                                 )
                               }
                             >
-                              <X className="h-4 w-4 mr-1" />
-                              Reject
+                              {request === req.userId ? (
+                                <Spinner
+                                  width="w-6"
+                                  className="size-fit"
+                                  borderColor="border-white"
+                                />
+                              ) : (
+                                <>
+                                  <X className="h-4 w-4 mr-1" />
+                                  Reject
+                                </>
+                              )}
                             </Button>
                           </div>
                         </div>
