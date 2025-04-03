@@ -296,7 +296,7 @@ export default function CommunityPage() {
                 <div className="h-full min-h-[30rem] max-h-[50rem] flex flex-col overflow-hidden">
                   <div className="flex-1 flex flex-col-reverse overflow-hidden">
                     <ScrollArea>
-                      <div className="flex flex-col-reverse gap-1">
+                      <div className="flex flex-col gap-1">
                         {community.messages.map((message, ind) => {
                           const isSender = message.userId === session.user.id;
 
