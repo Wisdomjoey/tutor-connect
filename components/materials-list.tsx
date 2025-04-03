@@ -29,7 +29,7 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
 
     if (data) setMaterials(data);
 
-    if (!intervalRef.current) intervalRef.current = setInterval(fetch, 60000);
+    intervalRef.current = setTimeout(fetch, 60000);
 
     if (!success)
       toast({
@@ -84,7 +84,7 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
     fetch();
 
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (intervalRef.current) clearTimeout(intervalRef.current);
     };
   }, [fetch]);
 
