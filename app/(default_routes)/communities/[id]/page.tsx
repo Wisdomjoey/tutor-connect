@@ -261,6 +261,8 @@ export default function CommunityPage() {
         variant: success ? "default" : "destructive",
       });
     });
+
+    setFiles([]);
   };
 
   if (!session) {
@@ -419,18 +421,28 @@ export default function CommunityPage() {
 
             <TabsContent value="files">
               <Card className="p-6">
-                <form onSubmit={handleSubmit} className="flex items-center flex-wrap gap-3 mb-6">
+                <form
+                  onSubmit={handleSubmit}
+                  className="flex items-center flex-wrap gap-3 mb-6"
+                >
                   <Input
+                    required
                     type="file"
                     id="file-upload"
+                    className="min-w-40"
+                    disabled={loading || isPending}
                     onChange={(e) =>
                       e.target.files && handleFiles(e.target.files)
                     }
                   />
 
-                  <Button type="submit">
+                  <Button disabled={loading || isPending} type="submit">
                     <Upload className="mr-2 h-4 w-4" />
-                    Upload File
+                    {isPending ? (
+                      <Spinner width="w-6" className="size-fit" />
+                    ) : (
+                      "Upload File"
+                    )}
                   </Button>
                 </form>
 

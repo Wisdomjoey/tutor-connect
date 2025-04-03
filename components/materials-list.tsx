@@ -88,6 +88,8 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
         variant: success ? "default" : "destructive",
       });
     });
+
+    setFiles([]);
   };
 
   useEffect(() => {
@@ -115,9 +117,9 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
           <Input
             required
             type="file"
-            disabled={loading}
-            className="min-w-40"
             id="file-upload"
+            className="min-w-40"
+            disabled={loading || isPending}
             onChange={(e) => e.target.files && handleFiles(e.target.files)}
           />
 
