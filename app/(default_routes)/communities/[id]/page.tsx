@@ -296,7 +296,7 @@ export default function CommunityPage() {
                 <div className="h-full min-h-[30rem] max-h-[50rem] flex flex-col overflow-hidden">
                   <div className="flex-1 flex flex-col-reverse overflow-hidden">
                     <ScrollArea>
-                      <div className="flex flex-col gap-1">
+                      <div className="flex flex-col-reverse gap-1">
                         {community.messages.map((message, ind) => {
                           const isSender = message.userId === session.user.id;
 
@@ -316,13 +316,13 @@ export default function CommunityPage() {
                                     : "bg-input text-left text-primary"
                                 )}
                               >
-                                <h1 className="text-sm font-semibold">
+                                <h1 className="text-sm font-bold">
                                   {message.user.fullname}
                                 </h1>
 
                                 <p
                                   className={cn(
-                                    "flex items-end gap-1",
+                                    "flex items-end gap-2",
                                     isSender ? "flex-row-reverse" : "flex-row"
                                   )}
                                 >
@@ -330,7 +330,7 @@ export default function CommunityPage() {
                                   <span className="text-muted-foreground text-xs">
                                     {formatDate(
                                       message.createdAt,
-                                      "dd/MM/yyyy HH:mm"
+                                      "HH:mm"
                                     )}
                                   </span>
                                 </p>
