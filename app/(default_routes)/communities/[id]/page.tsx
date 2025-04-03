@@ -98,8 +98,8 @@ export default function CommunityPage() {
           token
         );
 
-        roomRef.current.registerTextStreamHandler(id, (reader, info) => {
-          console.log(reader);
+        roomRef.current.registerTextStreamHandler(id, async (reader, info) => {
+          console.log(await reader.readAll());
           console.log(info);
         });
       }
@@ -139,7 +139,7 @@ export default function CommunityPage() {
 
   const handleMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!params.id || typeof params.id !== "string" || message === "") return;
 
     transition(async () => {
