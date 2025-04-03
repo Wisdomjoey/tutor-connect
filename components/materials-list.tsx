@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FileText, Upload } from "lucide-react";
@@ -25,6 +31,7 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
   const [materials, setMaterials] = useState<Material[]>([]);
 
   const fetch = useCallback(async () => {
+    console.log("called");
     const { message, success, data } = await fetchClassMaterials(classId);
 
     if (data) setMaterials(data);
@@ -59,7 +66,9 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     if (files.length <= 0) return;
 
     transition(async () => {
