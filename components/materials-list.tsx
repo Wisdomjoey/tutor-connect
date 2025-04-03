@@ -72,10 +72,11 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
 
     await fetch();
 
-    toast({
-      description: message,
-      variant: success ? "default" : "destructive",
-    });
+    if (!success)
+      toast({
+        description: message,
+        variant: "destructive",
+      });
   };
 
   useEffect(() => {
@@ -110,16 +111,14 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
           />
 
           <Button type="submit">
-            <span>
-              <Upload className="mr-2 h-4 w-4" />
-              Upload Material
-            </span>
+            <Upload className="mr-2 h-4 w-4" />
+            Upload Material
           </Button>
         </form>
       )}
 
       <div className="space-y-5">
-        {files.length > 0 ? (
+        {files.length > 0 && (
           <div className="space-y-2">
             <h3 className="text-base sm:text-lg">Uploaded</h3>
 
@@ -135,37 +134,39 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
               </div>
             ))}
           </div>
+        )}
+
+        {materials.length > 0 ? (
+          <div className="space-y-2">
+            <h3 className="text-base sm:text-lg">Class Files</h3>
+
+            {materials.map((material, ind) => (
+              <div
+                key={ind}
+                className="flex items-center justify-between p-4 border rounded-lg"
+              >
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  <span>{material.name}</span>
+                </div>
+
+                <Button asChild>
+                  <a
+                    target="_blank"
+                    href={material.url}
+                    rel="noopener noreferrer"
+                  >
+                    Download
+                  </a>
+                </Button>
+              </div>
+            ))}
+          </div>
         ) : (
           <div className="py-10">
             <p>There are currently no uploaded files</p>
           </div>
         )}
-
-        <div className="space-y-2">
-          <h3 className="text-base sm:text-lg">Class Files</h3>
-
-          {materials.map((material, ind) => (
-            <div
-              key={ind}
-              className="flex items-center justify-between p-4 border rounded-lg"
-            >
-              <div className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                <span>{material.name}</span>
-              </div>
-
-              <Button asChild>
-                <a
-                  target="_blank"
-                  href={material.url}
-                  rel="noopener noreferrer"
-                >
-                  Download
-                </a>
-              </Button>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );
