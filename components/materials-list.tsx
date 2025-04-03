@@ -93,13 +93,6 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
       </div>
     );
 
-  if (materials.length <= 0)
-    return (
-      <div className="py-10">
-        <p>There are currently no uploaded files</p>
-      </div>
-    );
-
   return (
     <div className="space-y-4">
       {session?.user.id === tutorId && (
@@ -126,7 +119,7 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
       )}
 
       <div className="space-y-5">
-        {files.length > 0 && (
+        {files.length > 0 ? (
           <div className="space-y-2">
             <h3 className="text-base sm:text-lg">Uploaded</h3>
 
@@ -141,6 +134,10 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
                 </div>
               </div>
             ))}
+          </div>
+        ) : (
+          <div className="py-10">
+            <p>There are currently no uploaded files</p>
           </div>
         )}
 
