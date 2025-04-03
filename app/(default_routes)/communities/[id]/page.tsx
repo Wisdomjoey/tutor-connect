@@ -2,7 +2,13 @@
 
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import React, { Fragment, useEffect, useRef, useState, useTransition } from "react";
+import React, {
+  Fragment,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,7 +25,6 @@ import {
   Check,
   X,
 } from "lucide-react";
-import { LiveChat } from "@/components/live-chat";
 import {
   Community,
   CommunityFile,
@@ -32,17 +37,20 @@ import {
   connectToCommunity,
   fetchCommunity,
   handleJoinRequest,
+  sendMessage,
 } from "@/actions/community";
 import Spinner from "@/components/widgets/Spinner";
 import { Room } from "livekit-client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { formatDate } from "date-fns";
 
 type CommunityType = Community & {
   admin: User;
   files: (CommunityFile & { user: { fullname: string } })[];
   members: (CommunityMember & { user: { email: string; fullname: string } })[];
-  messages: CommunityMessage[];
+  messages: (CommunityMessage & { user: { fullname: string } })[];
 };
 
 const departmentIcons: { [key: string]: any } = {
@@ -140,12 +148,39 @@ export default function CommunityPage() {
   const handleMessage = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!params.id || typeof params.id !== "string" || message === "") return;
+    const id = params.id;
+
+    if (!id || typeof id !== "string" || message === "") return;
+
+    setCommunity((prev) =>
+      prev
+        ? {
+            ...prev,
+            messages: [
+              {
+                communityId: id,
+                content: message,
+                createdAt: new Date(),
+                id: Date.now().toString(),
+                userId: session?.user.id ?? "",
+                user: {
+                  fullname: session?.user.fullname ?? "",
+                },
+              },
+              ...prev.messages,
+            ],
+          }
+        : undefined
+    );
+
+    setMessage("");
 
     transition(async () => {
       await roomRef.current.localParticipant.sendText(message, {
-        topic: params.id!.toString(),
+        topic: id,
       });
+
+      await sendMessage(id, message);
     });
   };
 
@@ -237,10 +272,54 @@ export default function CommunityPage() {
 
                 <div className="h-full min-h-[30rem] max-h-[50rem] flex flex-col overflow-hidden">
                   <div className="flex-1 overflow-hidden">
-                    <ScrollArea></ScrollArea>
+                    <ScrollArea>
+                      <div className="flex flex-col-reverse gap-1">
+                        {community.messages.map((message, ind) => {
+                          const isSender = message.userId === session.user.id;
+
+                          return (
+                            <div
+                              key={ind}
+                              className={cn(
+                                "w-full flex items-center",
+                                isSender ? "justify-end" : "justify-start"
+                              )}
+                            >
+                              <div
+                                className={cn(
+                                  "py-1 px-2 rounded-md space-y-1",
+                                  isSender
+                                    ? "bg-primary text-right"
+                                    : "bg-input text-left"
+                                )}
+                              >
+                                <h1 className="text-base">
+                                  {message.user.fullname}
+                                </h1>
+
+                                <p
+                                  className={cn(
+                                    "text-sm flex items-end gap-1",
+                                    isSender ? "flex-row-reverse" : "flex-row"
+                                  )}
+                                >
+                                  {message.content}{" "}
+                                  <span className="text-muted-foreground text-xs">
+                                    {formatDate(
+                                      message.createdAt,
+                                      "dd/MM/yyyy HH:mm"
+                                    )}
+                                  </span>
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </ScrollArea>
                   </div>
 
-                  <div className="p-3">
+                  <div className="pt-3">
                     <form
                       onSubmit={handleMessage}
                       className="flex items-center gap-3"

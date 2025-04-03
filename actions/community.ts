@@ -297,7 +297,15 @@ export const fetchCommunity = async (id: string) => {
             },
           },
         },
-        messages: true,
+        messages: {
+          include: {
+            user: {
+              select: {
+                fullname: true,
+              },
+            },
+          },
+        },
       },
     });
 
