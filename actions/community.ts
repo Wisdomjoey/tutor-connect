@@ -6,6 +6,7 @@ import { CommunitySchema, UseCommunitySchema } from "@/zod/schema";
 import { authenticate } from "./auth";
 import { STATUS } from "@prisma/client";
 import { AccessToken } from "livekit-server-sdk";
+import { uploadFile } from "./upload";
 
 const apiKey = process.env.LIVEKIT_API_KEY;
 const apiSecret = process.env.LIVEKIT_SECRET;
@@ -438,6 +439,60 @@ export const sendMessage = async (id: string, message: string) => {
     return {
       success: true,
       message: "Successfully sent message",
+    };
+  } catch (error) {
+    const err = errorHandler(error);
+
+    return { ...err, success: false };
+  }
+};
+
+export const uploadCommunityFile = async (id: string, form: FormData) => {
+  try {
+    const auth = await authenticate();
+
+    if (!auth.valid || !auth.session?.user.id)
+      return {
+        success: false,
+        message: "Session has expired",
+      };
+
+    let community = await db.community.findUnique({
+      where: { id },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!community)
+      return {
+        success: false,
+        message: "Community doesn't exist",
+      };
+
+    const upload = await uploadFile(form);
+
+    if (!upload.success || !upload.data)
+      return {
+        success: false,
+        message: upload.message,
+      };
+
+    await db.communityFile.createMany({
+      data: [
+        ...upload.data.map((val) => ({
+          userId: auth.session?.user.id ?? "",
+          createdAt: new Date(),
+          communityId: id,
+          name: val.name,
+          url: val.url,
+        })),
+      ],
+    });
+
+    return {
+      success: true,
+      message: "Successfully uploaded files",
     };
   } catch (error) {
     const err = errorHandler(error);

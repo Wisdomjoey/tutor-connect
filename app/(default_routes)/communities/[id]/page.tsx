@@ -38,6 +38,7 @@ import {
   fetchCommunity,
   handleJoinRequest,
   sendMessage,
+  uploadCommunityFile,
 } from "@/actions/community";
 import Spinner from "@/components/widgets/Spinner";
 import { Room } from "livekit-client";
@@ -69,8 +70,10 @@ export default function CommunityPage() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
+  const [files, setFiles] = useState<File[]>([]);
   const [isPending, transition] = useTransition();
   const [request, setRequest] = useState<string>();
+  const intervalRef = useRef<NodeJS.Timeout>(null);
   const [community, setCommunity] = useState<CommunityType>();
 
   useEffect(() => {
@@ -81,61 +84,66 @@ export default function CommunityPage() {
 
     return () => {
       ref.disconnect();
+
+      if (intervalRef.current) clearTimeout(intervalRef.current);
     };
   }, [params.id]);
 
-  const fetchCommunityData = async (id: string) => {
+  const connect = async (id: string) => {
+    const {
+      success: success1,
+      data: token,
+      message,
+    } = await connectToCommunity(id);
+
+    if (!success1) setError(message);
+    if (token) {
+      await roomRef.current.connect(
+        process.env.NEXT_PUBLIC_LIVEKIT_URL ?? "",
+        token
+      );
+
+      roomRef.current.registerTextStreamHandler(id, async (reader, info) => {
+        const msg = await reader.readAll();
+
+        setCommunity((prev) =>
+          prev
+            ? {
+                ...prev,
+                messages: [
+                  ...prev.messages,
+                  {
+                    content: msg,
+                    createdAt: new Date(),
+                    userId: info.identity,
+                    id: Date.now().toString(),
+                    communityId: reader.info.topic,
+                    user: {
+                      fullname: reader.info.attributes?.name ?? "Anonymous",
+                    },
+                  },
+                ],
+              }
+            : undefined
+        );
+      });
+    }
+  };
+
+  const fetch = async (id: string) => {
     setError(undefined);
 
-    try {
-      const { success, data } = await fetchCommunity(id);
+    const { success, data } = await fetchCommunity(id);
 
-      if (!success) setError("Something went wrong");
-      if (data) setCommunity(data);
+    if (!success) setError("Something went wrong");
+    if (data) setCommunity(data);
 
-      const {
-        success: success1,
-        data: token,
-        message,
-      } = await connectToCommunity(id);
+    intervalRef.current = setTimeout(() => fetch(id), 30000);
+  };
 
-      if (!success1) setError(message);
-      if (token) {
-        await roomRef.current.connect(
-          process.env.NEXT_PUBLIC_LIVEKIT_URL ?? "",
-          token
-        );
-
-        roomRef.current.registerTextStreamHandler(id, async (reader, info) => {
-          const msg = await reader.readAll();
-
-          setCommunity((prev) =>
-            prev
-              ? {
-                  ...prev,
-                  messages: [
-                    ...prev.messages,
-                    {
-                      content: msg,
-                      createdAt: new Date(),
-                      userId: info.identity,
-                      id: Date.now().toString(),
-                      communityId: reader.info.topic,
-                      user: {
-                        fullname: reader.info.attributes?.name ?? "Anonymous",
-                      },
-                    },
-                  ],
-                }
-              : undefined
-          );
-        });
-      }
-    } catch (error) {
-      console.error(error);
-
-      setError("Something went wrong");
-    }
+  const fetchCommunityData = async (id: string) => {
+    await fetch(id);
+    await connect(id);
 
     setLoading(false);
   };
@@ -207,7 +215,50 @@ export default function CommunityPage() {
     });
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {};
+  const handleFiles = (fileList: FileList) => {
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList.item(i);
+
+      if (!file) continue;
+
+      const limit = 1000 * 1024;
+
+      if (file.size > limit) {
+        return toast({
+          description: "One of the files has exceeded size limit of 1mb",
+          variant: "destructive",
+        });
+      }
+
+      setFiles((prev) => [...prev, file]);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const id = params.id;
+
+    if (!id || typeof id !== "string") return;
+    if (files.length <= 0) return;
+
+    transition(async () => {
+      const form = new FormData();
+
+      files.forEach((file, ind) => form.append(ind.toString(), file));
+
+      const { message, success } = await uploadCommunityFile(id, form);
+
+      if (intervalRef.current) clearInterval(intervalRef.current);
+
+      await fetch(id);
+
+      toast({
+        description: message,
+        variant: success ? "default" : "destructive",
+      });
+    });
+  };
 
   if (!session) {
     return (
@@ -328,10 +379,7 @@ export default function CommunityPage() {
                                 >
                                   {message.content}{" "}
                                   <span className="text-muted-foreground text-xs">
-                                    {formatDate(
-                                      message.createdAt,
-                                      "HH:mm"
-                                    )}
+                                    {formatDate(message.createdAt, "HH:mm")}
                                   </span>
                                 </p>
                               </div>
@@ -368,23 +416,21 @@ export default function CommunityPage() {
 
             <TabsContent value="files">
               <Card className="p-6">
-                <div className="mb-6">
+                <form onSubmit={handleSubmit} className="mb-6">
                   <input
                     type="file"
-                    onChange={handleFileUpload}
                     className="hidden"
                     id="file-upload"
+                    onChange={(e) =>
+                      e.target.files && handleFiles(e.target.files)
+                    }
                   />
 
-                  <label htmlFor="file-upload">
-                    <Button asChild>
-                      <span>
-                        <Upload className="mr-2 h-4 w-4" />
-                        Upload File
-                      </span>
-                    </Button>
-                  </label>
-                </div>
+                  <Button type="submit">
+                    <Upload className="mr-2 h-4 w-4" />
+                    Upload File
+                  </Button>
+                </form>
 
                 <div className="space-y-4">
                   {community.files.map((file) => (
