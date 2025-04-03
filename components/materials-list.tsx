@@ -36,7 +36,7 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
 
     if (data) setMaterials(data);
 
-    intervalRef.current = setTimeout(fetch, 60000);
+    intervalRef.current = setTimeout(fetch, 30000);
 
     if (!success)
       toast({
