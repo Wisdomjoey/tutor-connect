@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FileText, Upload } from "lucide-react";
@@ -20,6 +20,7 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
   const [files, setFiles] = useState<File[]>([]);
+  const [isPending, transition] = useTransition();
   const intervalRef = useRef<NodeJS.Timeout>(null);
   const [materials, setMaterials] = useState<Material[]>([]);
 
@@ -62,7 +63,7 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
     if (files.length <= 0) return;
 
     setLoading(true);
-console.log(files[0])
+
     const form = new FormData();
 
     files.forEach((file, ind) => form.append(ind.toString(), file));
@@ -110,9 +111,13 @@ console.log(files[0])
             onChange={(e) => e.target.files && handleFiles(e.target.files)}
           />
 
-          <Button type="submit">
+          <Button disabled={isPending || loading} type="submit">
             <Upload className="mr-2 h-4 w-4" />
-            Upload Material
+            {isPending ? (
+              <Spinner width="w-6" className="size-fit" />
+            ) : (
+              "Upload Material"
+            )}
           </Button>
         </form>
       )}
