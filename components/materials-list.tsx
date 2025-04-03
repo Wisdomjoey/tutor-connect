@@ -30,7 +30,7 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
   const intervalRef = useRef<NodeJS.Timeout>(null);
   const [materials, setMaterials] = useState<Material[]>([]);
 
-  const fetch = useCallback(async () => {
+  const fetch = async () => {
     console.log("called");
     const { message, success, data } = await fetchClassMaterials(classId);
 
@@ -45,7 +45,7 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
       });
 
     setLoading(false);
-  }, [classId, toast]);
+  };
 
   const handleFiles = (fileList: FileList) => {
     for (let i = 0; i < fileList.length; i++) {
@@ -95,7 +95,7 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
     return () => {
       if (intervalRef.current) clearTimeout(intervalRef.current);
     };
-  }, [fetch]);
+  }, []);
 
   if (loading)
     return (
