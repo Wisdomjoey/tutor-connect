@@ -114,6 +114,7 @@ export default function CommunityPage() {
               ? {
                   ...prev,
                   messages: [
+                    ...prev.messages,
                     {
                       content: msg,
                       createdAt: new Date(),
@@ -124,7 +125,6 @@ export default function CommunityPage() {
                         fullname: reader.info.attributes?.name ?? "Anonymous",
                       },
                     },
-                    ...prev.messages,
                   ],
                 }
               : undefined
@@ -177,6 +177,7 @@ export default function CommunityPage() {
         ? {
             ...prev,
             messages: [
+              ...prev.messages,
               {
                 communityId: id,
                 content: message,
@@ -187,7 +188,6 @@ export default function CommunityPage() {
                   fullname: session?.user.fullname ?? "",
                 },
               },
-              ...prev.messages,
             ],
           }
         : undefined
