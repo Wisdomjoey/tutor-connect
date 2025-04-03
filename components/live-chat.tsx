@@ -102,8 +102,7 @@ export function LiveChat({ roomName, initialMessages }: LiveChatProps) {
 
       await room.localParticipant.publishData(
         new TextEncoder().encode(JSON.stringify(data)),
-        DataPacket_Kind.RELIABLE,
-        // { reliable: true, }
+        { reliable: true, }
       );
 
       setMessages((prev) => [...prev, message]);
