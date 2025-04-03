@@ -126,7 +126,7 @@ export const connectToCommunity = async (id: string) => {
 
     return {
       success: true,
-      data: at.toJwt(),
+      data: await at.toJwt(),
       message: "Successfull",
     };
   } catch (error) {
@@ -377,6 +377,59 @@ export const fetchMemberships = async () => {
       success: true,
       data: memberships,
       message: "Successfully fetched memberships",
+    };
+  } catch (error) {
+    const err = errorHandler(error);
+
+    return { ...err, success: false };
+  }
+};
+
+export const sendMessage = async (id: string, message: string) => {
+  try {
+    const auth = await authenticate();
+
+    if (!auth.valid || !auth.session?.user.id)
+      return {
+        success: false,
+        message: "Session has expired",
+      };
+
+    const community = await db.community.findUnique({
+      where: {
+        id,
+        OR: [
+          { adminId: auth.session.user.id },
+          {
+            members: {
+              some: {
+                userId: auth.session.user.id,
+              },
+            },
+          },
+        ],
+      },
+      select: { id: true },
+    });
+
+    if (!community)
+      return {
+        success: false,
+        message: "Community does not exist or you are not a member",
+      };
+
+    await db.communityMessage.create({
+      data: {
+        communityId: id,
+        content: message,
+        createdAt: new Date(),
+        userId: auth.session.user.id,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Successfully sent message",
     };
   } catch (error) {
     const err = errorHandler(error);

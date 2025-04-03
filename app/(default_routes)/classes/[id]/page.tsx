@@ -12,8 +12,6 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
-import { VideoRoom } from "@/components/video-room";
-import { Chat } from "@/components/chat";
 import { MaterialsList } from "@/components/materials-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Spinner from "@/components/widgets/Spinner";

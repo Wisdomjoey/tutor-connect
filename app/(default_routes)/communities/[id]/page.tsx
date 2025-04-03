@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -35,6 +35,8 @@ import {
 } from "@/actions/community";
 import Spinner from "@/components/widgets/Spinner";
 import { Room } from "livekit-client";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
 
 type CommunityType = Community & {
   admin: User;
@@ -56,8 +58,10 @@ export default function CommunityPage() {
   const { toast } = useToast();
   const roomRef = useRef(new Room());
   const { data: session } = useSession();
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
+  const [isPending, transition] = useTransition();
   const [request, setRequest] = useState<string>();
   const [community, setCommunity] = useState<CommunityType>();
 
@@ -88,11 +92,17 @@ export default function CommunityPage() {
       } = await connectToCommunity(id);
 
       if (!success1) setError(message);
-      if (token)
+      if (token) {
         await roomRef.current.connect(
           process.env.NEXT_PUBLIC_LIVEKIT_URL ?? "",
           token
         );
+
+        roomRef.current.registerTextStreamHandler(id, (reader, info) => {
+          console.log(reader);
+          console.log(info);
+        });
+      }
     } catch (error) {
       console.error(error);
 
@@ -125,6 +135,16 @@ export default function CommunityPage() {
     });
 
     setRequest(undefined);
+  };
+
+  const handleMessage = () => {
+    if (!params.id || typeof params.id !== "string" || message === "") return;
+
+    transition(async () => {
+      await roomRef.current.localParticipant.sendText(message, {
+        topic: params.id!.toString(),
+      });
+    });
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {};
@@ -212,6 +232,33 @@ export default function CommunityPage() {
                   roomName={`community-${params.id}`}
                   initialMessages={messages}
                 /> */}
+
+                <div className="h-full min-h-[30rem] max-h-[50rem] flex flex-col overflow-hidden">
+                  <div className="flex-1 overflow-hidden">
+                    <ScrollArea></ScrollArea>
+                  </div>
+
+                  <div className="p-3">
+                    <form
+                      onSubmit={handleMessage}
+                      className="flex items-center gap-3"
+                    >
+                      <Input
+                        name="message"
+                        value={message}
+                        placeholder="Enter message..."
+                        onChange={(e) => setMessage(e.target.value)}
+                      />
+
+                      <Button
+                        type="submit"
+                        disabled={isPending || message === ""}
+                      >
+                        Send
+                      </Button>
+                    </form>
+                  </div>
+                </div>
               </Card>
             </TabsContent>
 
