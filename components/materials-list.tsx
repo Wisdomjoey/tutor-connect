@@ -62,21 +62,21 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
   const handleSubmit = async () => {
     if (files.length <= 0) return;
 
-    setLoading(true);
+    transition(async () => {
+      const form = new FormData();
 
-    const form = new FormData();
+      files.forEach((file, ind) => form.append(ind.toString(), file));
 
-    files.forEach((file, ind) => form.append(ind.toString(), file));
+      const { message, success } = await uploadClassFile(classId, form);
 
-    const { message, success } = await uploadClassFile(classId, form);
+      if (intervalRef.current) clearInterval(intervalRef.current);
 
-    if (intervalRef.current) clearInterval(intervalRef.current);
+      await fetch();
 
-    await fetch();
-
-    toast({
-      description: message,
-      variant: success ? "default" : "destructive",
+      toast({
+        description: message,
+        variant: success ? "default" : "destructive",
+      });
     });
   };
 

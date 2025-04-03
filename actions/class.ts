@@ -523,9 +523,6 @@ export const uploadClassFile = async (id: string, form: FormData) => {
       where: { id },
       select: {
         tutorId: true,
-        tutor: {
-          select: { fullname: true },
-        },
       },
     });
 
@@ -551,7 +548,7 @@ export const uploadClassFile = async (id: string, form: FormData) => {
     await db.material.createMany({
       data: [
         ...upload.data.map((val) => ({
-          uploadedBy: _class.tutor.fullname,
+          uploadedBy: _class.tutorId,
           name: val.name,
           url: val.url,
           classId: id,
