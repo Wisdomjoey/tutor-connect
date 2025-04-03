@@ -179,6 +179,7 @@ export default function CommunityPage() {
     const id = params.id;
 
     if (!id || typeof id !== "string" || message === "") return;
+    if (intervalRef.current) clearTimeout(intervalRef.current);
 
     setCommunity((prev) =>
       prev
@@ -213,6 +214,8 @@ export default function CommunityPage() {
 
       await sendMessage(id, message);
     });
+
+    intervalRef.current = setTimeout(() => fetch(id), 30000);
   };
 
   const handleFiles = (fileList: FileList) => {
@@ -344,7 +347,7 @@ export default function CommunityPage() {
                   initialMessages={messages}
                 /> */}
 
-                <div className="h-full min-h-[30rem] max-h-[50rem] flex flex-col overflow-hidden">
+                <div className="h-full min-h-[30rem] max-h-[35rem] flex flex-col overflow-hidden">
                   <div className="flex-1 flex flex-col-reverse overflow-hidden">
                     <ScrollArea>
                       <div className="flex flex-col gap-1">
@@ -416,10 +419,9 @@ export default function CommunityPage() {
 
             <TabsContent value="files">
               <Card className="p-6">
-                <form onSubmit={handleSubmit} className="mb-6">
-                  <input
+                <form onSubmit={handleSubmit} className="flex items-center flex-wrap gap-3 mb-6">
+                  <Input
                     type="file"
-                    className="hidden"
                     id="file-upload"
                     onChange={(e) =>
                       e.target.files && handleFiles(e.target.files)
