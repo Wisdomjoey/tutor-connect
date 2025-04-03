@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { Fragment, useEffect, useRef, useState, useTransition } from "react";
+import React, { Fragment, useEffect, useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -137,7 +137,9 @@ export default function CommunityPage() {
     setRequest(undefined);
   };
 
-  const handleMessage = () => {
+  const handleMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    
     if (!params.id || typeof params.id !== "string" || message === "") return;
 
     transition(async () => {
