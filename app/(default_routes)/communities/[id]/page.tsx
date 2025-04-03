@@ -107,8 +107,28 @@ export default function CommunityPage() {
         );
 
         roomRef.current.registerTextStreamHandler(id, async (reader, info) => {
-          console.log(await reader.readAll());
-          console.log(info);
+          const msg = await reader.readAll();
+
+          setCommunity((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  messages: [
+                    {
+                      content: msg,
+                      createdAt: new Date(),
+                      userId: info.identity,
+                      id: Date.now().toString(),
+                      communityId: reader.info.topic,
+                      user: {
+                        fullname: reader.info.attributes?.name ?? "Anonymous",
+                      },
+                    },
+                    ...prev.messages,
+                  ],
+                }
+              : undefined
+          );
         });
       }
     } catch (error) {
@@ -178,6 +198,9 @@ export default function CommunityPage() {
     transition(async () => {
       await roomRef.current.localParticipant.sendText(message, {
         topic: id,
+        attributes: {
+          name: session?.user.fullname ?? "Anonymous",
+        },
       });
 
       await sendMessage(id, message);
@@ -271,9 +294,9 @@ export default function CommunityPage() {
                 /> */}
 
                 <div className="h-full min-h-[30rem] max-h-[50rem] flex flex-col overflow-hidden">
-                  <div className="flex-1 overflow-hidden">
+                  <div className="flex-1 flex flex-col-reverse overflow-hidden">
                     <ScrollArea>
-                      <div className="flex flex-col-reverse gap-1">
+                      <div className="flex flex-col gap-1">
                         {community.messages.map((message, ind) => {
                           const isSender = message.userId === session.user.id;
 
@@ -289,17 +312,17 @@ export default function CommunityPage() {
                                 className={cn(
                                   "py-1 px-2 rounded-md space-y-1",
                                   isSender
-                                    ? "bg-primary text-right"
-                                    : "bg-input text-left"
+                                    ? "bg-primary text-right text-primary-foreground"
+                                    : "bg-input text-left text-primary"
                                 )}
                               >
-                                <h1 className="text-base">
+                                <h1 className="text-sm font-semibold">
                                   {message.user.fullname}
                                 </h1>
 
                                 <p
                                   className={cn(
-                                    "text-sm flex items-end gap-1",
+                                    "flex items-end gap-1",
                                     isSender ? "flex-row-reverse" : "flex-row"
                                   )}
                                 >
@@ -319,7 +342,7 @@ export default function CommunityPage() {
                     </ScrollArea>
                   </div>
 
-                  <div className="pt-3">
+                  <div className="p-1 pt-3">
                     <form
                       onSubmit={handleMessage}
                       className="flex items-center gap-3"
