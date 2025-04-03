@@ -31,7 +31,7 @@ export const uploadFile = async (form: FormData) => {
 
       files.push(value);
     }
-
+console.log(files)
     const uploads: {
       name: string;
       url: string;

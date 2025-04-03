@@ -30,10 +30,11 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
 
     if (!intervalRef.current) intervalRef.current = setInterval(fetch, 60000);
 
-    toast({
-      description: message,
-      variant: success ? "default" : "destructive",
-    });
+    if (!success)
+      toast({
+        description: message,
+        variant: success ? "default" : "destructive",
+      });
 
     setLoading(false);
   }, [classId, toast]);
@@ -61,7 +62,7 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
     if (files.length <= 0) return;
 
     setLoading(true);
-
+console.log(files[0])
     const form = new FormData();
 
     files.forEach((file, ind) => form.append(ind.toString(), file));
@@ -72,11 +73,10 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
 
     await fetch();
 
-    if (!success)
-      toast({
-        description: message,
-        variant: "destructive",
-      });
+    toast({
+      description: message,
+      variant: success ? "default" : "destructive",
+    });
   };
 
   useEffect(() => {
