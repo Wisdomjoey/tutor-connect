@@ -28,7 +28,7 @@ export function MaterialsList({ classId, tutorId }: MaterialsListProps) {
 
     if (data) setMaterials(data);
 
-    intervalRef.current = setInterval(fetch, 60000);
+    if (!intervalRef.current) intervalRef.current = setInterval(fetch, 60000);
 
     toast({
       description: message,
