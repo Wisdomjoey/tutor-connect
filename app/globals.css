@@ -1,4 +1,4 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -165,4 +165,177 @@
   body {
     @apply bg-background text-foreground;
   }
+} */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
 }
+
+* {
+  scroll-behavior: smooth;
+}
+
+.lk-video-conference-inner {
+  justify-content: space-between !important;
+}
+
+.lk-grid-layout-wrapper {
+  flex: 1 !important;
+  overflow: hidden !important;
+}
+
+.lk-grid-layout {
+  padding: 0.5rem !important;
+  padding-bottom: 0 !important;
+}
+
+.lk-participant-tile {
+  border-radius: 8px !important;
+}
+
+.lk-participant-metadata-item {
+  padding: 0.5rem !important;
+  border-radius: 4px !important;
+  background-color: hsl(var(--primary-foreground)) !important;
+}
+
+.lk-button.lk-focus-toggle-button {
+  border-radius: 4px !important;
+  background-color: hsl(var(--primary-foreground)) !important;
+}
+
+.lk-button.lk-focus-toggle-button > svg {
+  fill: hsl(var(--primary)) !important;
+}
+
+.lk-button {
+  color: hsl(var(--primary)) !important;
+}
+
+.lk-close-button > svg {
+  stroke: currentColor;
+}
+
+.lk-chat.open {
+  display: flex !important;
+}
+
+.lk-chat {
+  flex-direction: column !important;
+  border-left: 1px solid hsl(var(--border)) !important;
+  background-color: hsl(var(--background)) !important;
+  height: 100% !important;
+}
+
+.lk-chat-header {
+  width: 100%;
+  color: hsl(var(--primary)) !important;
+  border-bottom: 1px solid hsl(var(--border)) !important;
+}
+
+.lk-list.lk-chat-messages {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column-reverse !important;
+}
+
+.lk-chat-form {
+  width: 100% !important;
+  border-top: 1px solid hsl(var(--border)) !important;
+}
+
+.lk-chat-form-input {
+  background-color: hsl(var(--input)) !important;
+  padding: 0 0.5rem !important;
+  border-radius: 6px !important;
+  color: hsl(var(--primary)) !important;
+}
+
+.lk-chat-form-button {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+  border-radius: 6px !important;
+}
+
+.lk-chat-form-button:hover {
+  opacity: 0.8 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 262 83% 58%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221 83% 53%;
+    --chart-1: 221 83% 53%;
+    --chart-2: 262 83% 58%;
+    --chart-3: 187 75% 53%;
+    --chart-4: 43 96% 58%;
+    --chart-5: 355 78% 60%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217 32% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 32% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 262 83% 58%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 32% 17%;
+    --input: 217 32% 17%;
+    --ring: 224 76% 48%;
+    --chart-1: 217 91% 60%;
+    --chart-2: 262 83% 58%;
+    --chart-3: 187 75% 53%;
+    --chart-4: 43 96% 58%;
+    --chart-5: 355 78% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+

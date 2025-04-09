@@ -1,27 +1,19 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import {
-  BookOpen,
-  Calendar,
-  Users,
-  Video,
-  LogOut,
-  MessageSquare,
-  Menu,
-} from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
-import { useState } from "react";
-import Image from "next/image";
-import logo from "@/assets/logo.png";
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Users, Video, LogOut, MessageSquare, Menu } from "lucide-react"
+import { signOut, useSession } from "next-auth/react"
+import { useState } from "react"
+import Image from "next/image"
+import logo from "@/assets/logo.png"
 
 export function Navigation() {
-  const pathname = usePathname();
-  const { status } = useSession();
-  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname()
+  const { status } = useSession()
+  const [isOpen, setIsOpen] = useState(false)
 
   const NavItems = () => (
     <>
@@ -43,11 +35,7 @@ export function Navigation() {
             </Link>
           ))}
 
-          <Button
-            className="w-full justify-start md:justify-center"
-            variant="ghost"
-            onClick={() => signOut()}
-          >
+          <Button className="w-full justify-start md:justify-center" variant="ghost" onClick={() => signOut()}>
             <LogOut className="mr-2 h-4 w-4" />
             Sign Out
           </Button>
@@ -59,18 +47,20 @@ export function Navigation() {
           </Link>
 
           <Link href="/auth/signup">
-            <Button>Sign Up</Button>
+            <Button className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary">
+              Sign Up
+            </Button>
           </Link>
         </>
       )}
     </>
-  );
+  )
 
   return (
     <nav className="border-b">
-      <div className="flex h-16 items-center px-4">
+      <div className="flex h-16 items-center px-4 md:px-6 lg:px-8">
         <Link href="/" className="flex items-center space-x-2">
-          <Image src={logo} alt="Logo" className="w-8 object-contain" />
+          <Image src={logo || "/placeholder.svg"} alt="Logo" className="w-8 object-contain" />
 
           <span className="font-bold">TutorConnect</span>
         </Link>
@@ -97,5 +87,5 @@ export function Navigation() {
         </div>
       </div>
     </nav>
-  );
+  )
 }
