@@ -10,7 +10,7 @@ export const ClassSchema = z.object({
   max: zString.optional(),
   duration: zString.min(1, "Duration is required"),
   date: zString.min(1, "Date is required"),
-  time: zString.min(1, "Time is required"),
+  // time: zString.min(1, "Time is required"),
 });
 
 export const CommunitySchema = z.object({

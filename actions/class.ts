@@ -120,14 +120,14 @@ export const createClass = async (values: UseClassSchema) => {
     const {
       max,
       date,
-      time,
+      // time,
       title,
       faculty,
       duration,
       department,
       description,
     } = data;
-    const formatted = new Date(`${date} ${time}`);
+    const formatted = new Date(date);
 
     if (formatted < new Date())
       return {
@@ -145,10 +145,10 @@ export const createClass = async (values: UseClassSchema) => {
         faculty,
         department,
         description,
+        date: formatted,
         createdAt: new Date(),
         updatedAt: new Date(),
         tutorId: auth.session.user.id,
-        date: new Date(`${date} ${time}`),
         duration: Math.ceil(parseFloat(duration)),
         maxStudents: max ? Math.floor(parseFloat(max)) : 20,
       },

@@ -17,7 +17,7 @@ import {
 import DefaultInput from "@/components/inputs/DefaultInput";
 import SelectInput from "@/components/inputs/SelectInput";
 import Spinner from "@/components/widgets/Spinner";
-import DateInput from "@/components/inputs/DateInput";
+// import DateInput from "@/components/inputs/DateInput";
 import TextAreaInput from "@/components/inputs/TextAreaInput";
 import { createClass } from "@/actions/class";
 
@@ -33,7 +33,7 @@ export default function CreateClass() {
       faculty: "",
       title: "",
       date: "",
-      time: "",
+      // time: "",
       max: "",
     },
   });
@@ -163,12 +163,13 @@ export default function CreateClass() {
                 render={({ field, fieldState: { error } }) => (
                   <FormItem>
                     <FormControl>
-                      <DateInput
+                      <DefaultInput
                         id="date"
                         label="Date"
                         disabled={isPending}
                         placeholder="Enter date of class"
                         {...field}
+                        type="datetime-local"
                       />
                     </FormControl>
 
@@ -177,7 +178,7 @@ export default function CreateClass() {
                 )}
               />
 
-              <FormField
+              {/* <FormField
                 name="time"
                 disabled={isPending}
                 control={form.control}
@@ -188,8 +189,11 @@ export default function CreateClass() {
                         id="time"
                         label="Time"
                         disabled={isPending}
+                        onChange={e => {
+
+                        }}
                         placeholder="Enter time of class"
-                        type="time"
+                        type="d"
                         {...field}
                       />
                     </FormControl>
@@ -197,7 +201,7 @@ export default function CreateClass() {
                     <FormMessage className="text-red-600" />
                   </FormItem>
                 )}
-              />
+              /> */}
 
               <FormField
                 name="duration"
