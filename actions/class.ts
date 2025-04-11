@@ -89,7 +89,7 @@ export const connectToClass = async (id: string) => {
 
     return {
       success: true,
-      data: at.toJwt(),
+      data: await at.toJwt(),
       message: "Successfull",
     };
   } catch (error) {
