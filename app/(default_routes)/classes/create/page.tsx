@@ -17,7 +17,7 @@ import {
 import DefaultInput from "@/components/inputs/DefaultInput";
 import SelectInput from "@/components/inputs/SelectInput";
 import Spinner from "@/components/widgets/Spinner";
-// import DateInput from "@/components/inputs/DateInput";
+import DateInput from "@/components/inputs/DateInput";
 import TextAreaInput from "@/components/inputs/TextAreaInput";
 import { createClass } from "@/actions/class";
 
@@ -33,7 +33,6 @@ export default function CreateClass() {
       faculty: "",
       title: "",
       date: "",
-      // time: "",
       max: "",
     },
   });
@@ -169,7 +168,6 @@ export default function CreateClass() {
                         disabled={isPending}
                         placeholder="Enter date of class"
                         {...field}
-                        type="datetime-local"
                       />
                     </FormControl>
 
@@ -177,31 +175,6 @@ export default function CreateClass() {
                   </FormItem>
                 )}
               />
-
-              {/* <FormField
-                name="time"
-                disabled={isPending}
-                control={form.control}
-                render={({ field, fieldState: { error } }) => (
-                  <FormItem>
-                    <FormControl>
-                      <DefaultInput
-                        id="time"
-                        label="Time"
-                        disabled={isPending}
-                        onChange={e => {
-
-                        }}
-                        placeholder="Enter time of class"
-                        type="d"
-                        {...field}
-                      />
-                    </FormControl>
-
-                    <FormMessage className="text-red-600" />
-                  </FormItem>
-                )}
-              /> */}
 
               <FormField
                 name="duration"
