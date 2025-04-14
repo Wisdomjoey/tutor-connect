@@ -163,12 +163,17 @@ export default function CreateClass() {
                   <FormItem>
                     <FormControl>
                       <DefaultInput
+                        {...field}
                         id="date"
                         label="Date"
                         disabled={isPending}
                         placeholder="Enter date of class"
                         type="datetime-local"
-                        {...field}
+                        onChange={(e) => {
+                          e.preventDefault();
+
+                          field.onChange(new Date(e.target.value));
+                        }}
                       />
                     </FormControl>
 
