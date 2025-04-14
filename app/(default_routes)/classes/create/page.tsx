@@ -167,6 +167,7 @@ export default function CreateClass() {
                         label="Date"
                         disabled={isPending}
                         placeholder="Enter date of class"
+                        type="datetime-local"
                         {...field}
                       />
                     </FormControl>
