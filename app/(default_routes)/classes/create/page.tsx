@@ -39,7 +39,10 @@ export default function CreateClass() {
 
   const handleSubmit = async (values: UseClassSchema) => {
     transition(async () => {
-      const { message, success } = await createClass(values);
+      const { message, success } = await createClass({
+        ...values,
+        date: new Date(values.date).toString(),
+      });
 
       if (success) form.reset();
 
@@ -163,17 +166,12 @@ export default function CreateClass() {
                   <FormItem>
                     <FormControl>
                       <DefaultInput
-                        {...field}
                         id="date"
                         label="Date"
                         disabled={isPending}
                         placeholder="Enter date of class"
                         type="datetime-local"
-                        onChange={(e) => {
-                          e.preventDefault();
-
-                          field.onChange(new Date(e.target.value));
-                        }}
+                        {...field}
                       />
                     </FormControl>
 
