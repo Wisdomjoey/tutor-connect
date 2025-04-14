@@ -181,6 +181,7 @@
 }
 
 .lk-video-conference-inner {
+  gap: 0.5rem !important;
   justify-content: space-between !important;
 }
 
@@ -190,12 +191,18 @@
 }
 
 .lk-grid-layout {
+  gap: 0.5rem !important;
   padding: 0.5rem !important;
   padding-bottom: 0 !important;
 }
 
+.lk-control-bar {
+  background-color: hsl(var(--secondary)) !important;
+}
+
 .lk-participant-tile {
   border-radius: 8px !important;
+  background-color: hsl(var(--input));
 }
 
 .lk-participant-metadata-item {
@@ -338,4 +345,3 @@
     @apply bg-background text-foreground;
   }
 }
-
