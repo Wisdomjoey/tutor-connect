@@ -199,12 +199,26 @@ export const enrollInClass = async (id: string, token: string) => {
       where: {
         id,
       },
+      select: {
+        id: true,
+        maxStudents: true,
+        _count: {
+          select: {
+            enrollments: true,
+          }
+        }
+      }
     });
 
     if (!_class)
       return {
         success: false,
         message: "This class does not exist",
+      };
+    if ((_class.maxStudents ?? 0) <= _class._count.enrollments)
+      return {
+        success: false,
+        message: "This class is already full",
       };
 
     const enrollment = await db.enrollment.findFirst({
