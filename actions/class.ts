@@ -128,7 +128,7 @@ export const createClass = async (values: UseClassSchema) => {
       description,
     } = data;
     const formatted = new Date(new Date(date).getTime() - (60 * 60 * 1000));
-
+console.log(new Date())
     if (formatted < new Date())
       return {
         success: false,
