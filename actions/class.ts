@@ -127,9 +127,7 @@ export const createClass = async (values: UseClassSchema) => {
       department,
       description,
     } = data;
-    console.log(date)
-    const formatted = new Date(date);
-    console.log(formatted)
+    const formatted = new Date(new Date(date).getTime() - (60 * 60));
 
     if (formatted < new Date())
       return {
